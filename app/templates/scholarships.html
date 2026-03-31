@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholarships - Remote Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+
+
+<header style="background-color: #8e44ad;">
+        <h1>Global Scholarships</h1>
+        <p style="color: #ecd5f8;">Automated Scholarship Aggregator</p>
+        
+        <div style="margin-top: 15px; margin-bottom: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ url_for('main.index') }}" class="apply-btn" style="background-color: #34495e;">💼 View Jobs</a>
+            <a href="{{ url_for('main.scholarships_page') }}" class="apply-btn" style="background-color: #9b59b6;">🎓 View Scholarships</a>
+            <a href="{{ url_for('main.saved_jobs') }}" class="apply-btn" style="background-color: #f1c40f; color: black;">⭐ Saved Jobs</a>
+            <a href="{{ url_for('main.analytics_page') }}" class="apply-btn" style="background-color: #2980b9;">📊 Analytics</a>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <a href="{{ url_for('main.run_scholarship_fetch') }}" class="apply-btn" style="background-color: #27ae60;">Fetch New Scholarships</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="job-grid">
+            {% for item in scholarships %}
+            <div class="job-card">
+                <div class="job-header">
+                    <h2>{{ item['title'] }}</h2>
+                    <span class="category-badge" style="background-color: #f4ecf7; color: #8e44ad;">{{ item['level'] }}</span>
+                </div>
+                <h3>{{ item['provider'] }}</h3>
+                <div class="job-meta">
+                    <span>📅 {{ item['posted_date'] }}</span>
+                </div>
+                <p class="description">{{ item['description'] }}</p>
+                <div class="card-footer">
+                    <a href="{{ item['apply_url'] }}" target="_blank" class="apply-btn" style="background-color: #8e44ad;">View Scholarship</a>
+                    <span class="source-tag">Source: {{ item['source'] }}</span>
+                </div>
+            </div>
+            {% else %}
+            <p>No scholarships found. Click 'Fetch New Scholarships' to begin!</p>
+            {% endfor %}
+        </div>
+    </main>
+</body>
+</html>

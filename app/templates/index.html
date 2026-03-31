@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote Opportunity Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+
+
+<header>
+        <h1>Remote Opportunity Bot</h1>
+        <p>Automated Job Aggregator | Last Updated: {{ last_fetch }}</p>
+        
+        <div style="margin-top: 15px; margin-bottom: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ url_for('main.index') }}" class="apply-btn" style="background-color: #34495e;">💼 View Jobs</a>
+            <a href="{{ url_for('main.scholarships_page') }}" class="apply-btn" style="background-color: #8e44ad;">🎓 View Scholarships</a>
+            <a href="{{ url_for('main.saved_jobs') }}" class="apply-btn" style="background-color: #f1c40f; color: black;">⭐ Saved Jobs</a>
+            <a href="{{ url_for('main.analytics_page') }}" class="apply-btn" style="background-color: #2980b9;">📊 Analytics</a>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ url_for('main.run_fetch') }}" class="apply-btn" style="background-color: #27ae60;">Fetch New Jobs</a>
+            <a href="{{ url_for('main.send_email') }}" class="apply-btn" style="background-color: #e67e22;">Send Email Alert</a>
+        </div>
+    </header>
+
+
+
+
+
+
+<main>
+        <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+            
+            <form method="GET" action="{{ url_for('main.index') }}" style="display: flex; gap: 10px; flex-grow: 1; min-width: 300px;">
+                <input type="text" name="search" placeholder="Search keywords..." value="{{ current_search }}" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; flex-grow: 1;">
+                <select name="category" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    <option value="all">All Categories</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat['skill_category'] }}" {% if current_category == cat['skill_category'] %}selected{% endif %}>{{ cat['skill_category'] }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="apply-btn" style="background-color: #3498db; border: none; cursor: pointer;">Search</button>
+            </form>
+
+            <form method="POST" action="{{ url_for('main.index') }}" enctype="multipart/form-data" style="display: flex; gap: 10px; align-items: center; background: #e8f8f5; padding: 10px; border-radius: 4px; border: 1px solid #1abc9c;">
+                <label style="font-weight: bold; color: #16a085;">🤖 AI Matcher:</label>
+                <input type="file" name="cv_file" accept=".pdf" required style="font-size: 0.85rem;">
+                <button type="submit" class="apply-btn" style="background-color: #1abc9c; border: none; cursor: pointer;">Scan CV</button>
+            </form>
+
+            <a href="{{ url_for('main.clear_old') }}" class="apply-btn" style="background-color: #e74c3c; text-decoration: none;" onclick="return confirm('Delete all unsaved jobs older than 21 days?');">🗑️ Clear Old Jobs</a>
+        </div>
+
+        {% if ai_active %}
+        <div style="background-color: #d4efdf; color: #196f3d; padding: 10px; border-radius: 4px; margin-bottom: 20px; text-align: center; font-weight: bold;">
+            ✅ CV Uploaded Successfully! Jobs are now ranked by AI compatibility.
+        </div>
+        {% endif %}
+
+        <div class="job-grid">
+            {% for job in jobs %}
+            <div class="job-card">
+                <div class="job-header">
+                    <h2>{{ job['title'] }}</h2>
+                    <span class="category-badge">{{ job['skill_category'] }}</span>
+                </div>
+                <h3>{{ job['company'] }}</h3>
+                
+                {% if ai_active %}
+                <div style="margin-bottom: 15px; padding: 10px; background-color: #f8f9fa; border-left: 4px solid #3498db; border-radius: 4px;">
+                    <strong style="color: #2c3e50; font-size: 1.1rem;">Match Score: {{ job['score'] }}/100</strong>
+                    <ul style="margin-top: 5px; margin-left: 20px; font-size: 0.85rem; color: #7f8c8d;">
+                        {% for reason in job['reasons'] %}
+                            <li>{{ reason }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <div class="job-meta">
+                    <span>📅 {{ job['posted_date'] }}</span>
+                    <span>📍 {{ job['remote_status'] }}</span>
+                    <span>Source: {{ job['source'] }}</span>
+                </div>
+                <p class="description">{{ job['description'] }}</p>
+                <div class="card-footer" style="margin-top: 15px; display: flex; gap: 10px;">
+                    <a href="{{ job['apply_url'] }}" target="_blank" class="apply-btn" style="flex-grow: 1; text-align: center;">Apply Now</a>
+                    <a href="{{ url_for('main.toggle_save', job_id=job['id']) }}" class="apply-btn" style="background-color: {% if job['is_saved'] %}#f1c40f{% else %}#bdc3c7{% endif %}; color: #333; text-decoration: none;">
+                        {% if job['is_saved'] %}⭐ Saved{% else %}☆ Save{% endif %}
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <p>No jobs found. Try adjusting your search or fetch new ones!</p>
+            {% endfor %}
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,4 @@
+venv/
+__pycache__/
+app/database/remote_bot.db
+app/database/status.json

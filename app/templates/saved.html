@@ -1,0 +1,45 @@
+k<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Jobs - Remote Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header style="background-color: #f39c12;">
+        <h1>Your Saved Opportunities</h1>
+        <p style="color: #fff;">Review and apply to your favorited jobs</p>
+        
+        <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ url_for('main.index') }}" class="apply-btn" style="background-color: #34495e;">💼 Back to All Jobs</a>
+            <a href="{{ url_for('main.scholarships_page') }}" class="apply-btn" style="background-color: #8e44ad;">🎓 View Scholarships</a>
+            <a href="{{ url_for('main.saved_jobs') }}" class="apply-btn" style="background-color: #f39c12;">⭐ Saved Jobs</a>
+            <a href="{{ url_for('main.analytics_page') }}" class="apply-btn" style="background-color: #2980b9;">📊 Analytics</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="job-grid">
+            {% for job in jobs %}
+            <div class="job-card" style="border-left: 5px solid #f1c40f;">
+                <div class="job-header">
+                    <h2>{{ job['title'] }}</h2>
+                    <span class="category-badge">{{ job['skill_category'] }}</span>
+                </div>
+                <h3>{{ job['company'] }}</h3>
+                <p class="description">{{ job['description'] }}</p>
+                <div class="card-footer" style="margin-top: 15px; display: flex; gap: 10px;">
+                    <a href="{{ job['apply_url'] }}" target="_blank" class="apply-btn" style="flex-grow: 1; text-align: center;">Apply Now</a>
+                    <a href="{{ url_for('main.toggle_save', job_id=job['id']) }}" class="apply-btn" style="background-color: #e74c3c; color: white; text-decoration: none;">
+                        Remove
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <p>You haven't saved any jobs yet. Go to the main dashboard and click 'Save' on a job you like!</p>
+            {% endfor %}
+        </div>
+    </main>
+</body>
+</html>
